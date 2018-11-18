@@ -1,0 +1,12 @@
+#home {
+    display: grid;
+    grid-template-columns: config('width.24') auto;
+}
+
+@media (min-width: config('screens.xl')) {
+    #home { grid-template-columns: config('width.48') auto; }
+}
+
+a {
+    @apply .no-underline;
+}

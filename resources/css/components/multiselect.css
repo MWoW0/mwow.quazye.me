@@ -1,0 +1,10 @@
+.multiselect__tags {
+    background-color: config('colors.grey-lighter') !important;
+    color: config('colors.grey-darker') !important;
+    @apply .border .border-grey-lighter .rounded .py-3 .px-4
+}
+
+.multiselect__input, .multiselect__single {
+    background-color: config('colors.grey-lighter') !important;
+    color: config('colors.grey-darker') !important;
+}

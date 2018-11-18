@@ -1,0 +1,11 @@
+/*
+ * Active "group-hover" for the "display" module in your
+ * tailwind.js config file like this:
+ *
+ * display: ['responsive', 'group-hover']
+ *
+ * More info on https://tailwindcss.com/docs/state-variants/#group-hover
+ */
+.group:hover .group-hover\:block {
+    display: block;
+}
