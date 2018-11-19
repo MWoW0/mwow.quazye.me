@@ -69,9 +69,10 @@ class CreateGameAccountJob implements ShouldQueue
                 $driver = $manager->driver($emulator);
 
                 $account = Account::createWithEmulator($driver, [
+                    'last_login' => null,
                     'username' => $user->account_name,
                     'email' => $user->email,
-                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['user' => $user])
+                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['user' => $user]),
                 ]);
 
                 $driver
