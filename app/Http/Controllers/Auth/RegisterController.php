@@ -52,7 +52,7 @@ class RegisterController extends Controller
         return Validator::make(
             $data,
             [
-                'account_name' => 'required|string|max:16|min:1|alpha:unique:users,account_name|unique:skyfire_auth.account,username',
+                'account_name' => 'required|string|max:16|min:1|alpha|unique:users,account_name|unique:skyfire_auth.account,username',
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6|confirmed',

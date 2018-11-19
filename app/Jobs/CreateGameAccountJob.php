@@ -60,30 +60,34 @@ class CreateGameAccountJob implements ShouldQueue
      */
     public function handle(EmulatorManager $manager)
     {
-        /** @var User $user */
-        $user = User::query()->findOrFail($this->id);
+        try {
+            /** @var User $user */
+            $user = User::query()->findOrFail($this->id);
 
-        foreach ($this->emulators as $emulator) {
-            /** @var Emulator $driver */
-            $driver = $manager->driver($emulator);
+            foreach ($this->emulators as $emulator) {
+                /** @var Emulator $driver */
+                $driver = $manager->driver($emulator);
 
-            $account = Account::createWithEmulator($driver, [
-                'username' => $user->account_name,
-                'email' => $user->email,
-                'sha_pass_hash' => (new SillySha1)->make($this->password, ['user' => $user])
-            ]);
+                $account = Account::createWithEmulator($driver, [
+                    'username' => $user->account_name,
+                    'email' => $user->email,
+                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['user' => $user])
+                ]);
 
-            $driver
-                ->database()
-                ->auth()
-                ->table('realmlist')
-                ->orderBy('id')
-                ->each(function ($realm) use ($account, $user, $driver) {
-                    GameAccount::link($account, $user)
-                        ->onRealm($realm)
-                        ->through($driver)
-                        ->save();
-                });
+                $driver
+                    ->database()
+                    ->auth()
+                    ->table('realmlist')
+                    ->orderBy('id')
+                    ->each(function ($realm) use ($account, $user, $driver) {
+                        GameAccount::link($account, $user)
+                            ->onRealm($realm)
+                            ->through($driver)
+                            ->save();
+                    });
+            }
+        } catch (\Exception $e) {
+            $this->fail($e);
         }
     }
 }
