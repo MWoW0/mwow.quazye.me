@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Enums\UserType;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
+use function is_null;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
@@ -43,6 +45,14 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     {
         Gate::define('viewHorizon', function ($user) {
             return $user->type === UserType::Admin;
+        });
+
+        Horizon::auth(function ($request) {
+            if (is_null($request->user())) {
+                return false;
+            }
+
+            return $request->user()->type === UserType::Admin;
         });
     }
 }
