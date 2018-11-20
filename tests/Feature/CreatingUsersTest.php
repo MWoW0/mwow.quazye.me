@@ -3,13 +3,14 @@
 namespace Tests\Feature\User;
 
 use App\Account;
+use App\Realm;
 use App\User;
-use function config;
-use function file_get_contents;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use function config;
+use function file_get_contents;
 
 class CreatingUsersTest extends TestCase
 {
@@ -34,36 +35,30 @@ class CreatingUsersTest extends TestCase
      */
     public function itCreatesAUserAndAGameAccountUponRegistration()
     {
-        $accountName = $this->faker()->firstName;
-        $email = $this->faker()->email;
+        $realm = factory(Realm::class)->create();
 
         $this->postJson(
             '/register',
             [
-                'account_name' => $accountName,
+                'account_name' => 'john',
                 'name' => 'John Doe',
-                'email' => $email,
+                'email' => 'john@example.com',
                 'password' => 'secret',
                 'password_confirmation' => 'secret'
             ]
         )->assertRedirect('/home');
 
         $this->assertDatabaseHas('users', [
-            'account_name' => $accountName,
+            'account_name' => 'john',
             'name' => 'John Doe',
-            'email' => $email
+            'email' => 'john@example.com'
         ]);
 
         $this->assertDatabaseHas('account', [
-            'username' => $accountName,
-            'email' => $email
+            'username' => 'john',
+            'sha_pass_hash' => '0639C9915279A92A5AAF84FF50FBA680B06152CF',
+            'email' => 'john@example.com'
         ], 'skyfire_auth');
-
-        $user = User::where('email', $email)->with('gameAccounts')->first();
-        $this->assertNotNull($user->gameAccounts->first()->account_id);
-
-        // Clean up the newly created account on the skyfire_auth database.
-        Account::query()->whereKey($user->gameAccounts->first()->account_id)->delete();
     }
 
     /**
