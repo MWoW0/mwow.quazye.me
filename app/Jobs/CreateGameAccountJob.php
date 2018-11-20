@@ -56,10 +56,12 @@ class CreateGameAccountJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param EmulatorManager $manager
+     * @param EmulatorManager|null $manager
      */
-    public function handle(EmulatorManager $manager)
+    public function handle(EmulatorManager $manager = null)
     {
+        $manager = $manager ?? resolve(EmulatorManager::class);
+
         try {
             /** @var User $user */
             $user = User::query()->findOrFail($this->id);

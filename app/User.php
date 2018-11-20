@@ -11,7 +11,7 @@ use Laravel\Passport\HasApiTokens;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class User extends Authenticatable implements AuditableContract, MustVerifyEmail
+class User extends Authenticatable implements AuditableContract
 {
     use Auditable, SoftDeletes, HasApiTokens, Notifiable;
 

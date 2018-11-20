@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\CreateGameAccountJob;
 use Faker\Generator as Faker;
 
 /*
@@ -27,3 +28,8 @@ $factory->define(App\User::class, function (Faker $faker) {
 $factory->state(\App\User::class, 'player', ['type' => \App\Enums\UserType::Player]);
 $factory->state(\App\User::class, 'admin', ['type' => \App\Enums\UserType::Admin]);
 $factory->state(\App\User::class, 'moderator', ['type' => \App\Enums\UserType::Moderator]);
+
+$factory->state(\App\User::class, 'with game account', []);
+$factory->afterCreatingState(\App\User::class, 'with game account', function ($user) {
+	(new CreateGameAccountJob($user, 'secret'))->handle();
+});

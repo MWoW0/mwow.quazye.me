@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Auth;
 
 Route::view('/', 'welcome');
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => false]);
 
 Route::middleware(['auth'])->get('home/{any?}', 'ServeVueApp')->name('home')->where('any', '.*');

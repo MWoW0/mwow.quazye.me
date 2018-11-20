@@ -9,26 +9,20 @@ use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
+use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
 use function config;
 use function file_get_contents;
 
 class CreatingUsersTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase, HasSkyFireDatabases, WithFaker;
 
     protected function setUp()
     {
         parent::setUp();
 
-        config(['database.connections.skyfire_auth' => [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', false),
-        ]]);
-
-        DB::connection('skyfire_auth')->unprepared(file_get_contents(__DIR__ . '/../Fixtures/skyfire_auth_sqlite3.sql'));
+        $this->createSkyFireAuthDatabase();
     }
 
     /**

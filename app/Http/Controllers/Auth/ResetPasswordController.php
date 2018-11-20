@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\UpdateAccountPasswords;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ResetPasswordController extends Controller
 {
@@ -35,5 +39,28 @@ class ResetPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Reset the given user's password.
+     *
+     * @overrides \Illuminate\Foundation\Auth\ResetsPasswords
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  string  $password
+     * @return void
+     */
+    protected function resetPassword($user, $password)
+    {
+        $user->password = Hash::make($password);
+
+        $user->setRememberToken(Str::random(60));
+
+        $user->save();
+
+        event(new PasswordReset($user));
+
+        dispatch(new UpdateAccountPasswords($user, $password));
+
+        $this->guard()->login($user);
     }
 }
