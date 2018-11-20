@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Account;
+use App\Emulators\SkyFire;
 use App\Realm;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -59,6 +60,13 @@ class CreatingUsersTest extends TestCase
             'sha_pass_hash' => '0639C9915279A92A5AAF84FF50FBA680B06152CF',
             'email' => 'john@example.com'
         ], 'skyfire_auth');
+
+        $this->assertDatabaseHas('game_accounts', [
+            'user_id' => User::query()->where('email', 'john@example.com')->value('id'),
+            'account_id' => Account::query()->where('email', 'john@example.com')->value('id'),
+            'realm_id' => $realm->id,
+            'emulator' => SkyFire::class
+        ]);
     }
 
     /**
