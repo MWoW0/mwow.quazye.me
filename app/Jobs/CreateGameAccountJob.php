@@ -88,7 +88,6 @@ class CreateGameAccountJob implements ShouldQueue
                     });
             }
         } catch (\Exception $e) {
-            dd($e);
             $this->fail($e);
         }
     }
