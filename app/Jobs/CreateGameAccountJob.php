@@ -74,7 +74,7 @@ class CreateGameAccountJob implements ShouldQueue
                     'last_login' => now(),
                     'username' => $user->account_name,
                     'email' => $user->email,
-                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['user' => $user->account_name]),
+                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['account' => $user->account_name]),
                 ]);
 
                 $driver

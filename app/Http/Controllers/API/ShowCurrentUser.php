@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\CurrentUserResource;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use function sleep;
 
 class ShowCurrentUser extends Controller
 {

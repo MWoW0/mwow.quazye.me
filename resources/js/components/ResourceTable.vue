@@ -18,7 +18,7 @@
             <tbody>
                 <tr class="cursor-pointer hover:bg-blue-lighter" v-for="item in content" :key="item.id" @click="navigateToDetails(item)">
                     <td v-for="(field, index) in preparedFields" :key="index">
-                        {{ item[field.attribute] }}
+                        {{ get(item, field.attribute) }}
                     </td>
                 </tr>
             </tbody>
@@ -32,7 +32,7 @@
     import TableSortIcon from "./TableSortIcon";
     import Pagination from "./Pagination";
     import AlgoliaSearchInput from "./AlgoliaSearchInput";
-    import { upperFirst, startCase, flatMap, forEach } from 'lodash';
+    import {forEach, get as lodashGet, startCase, upperFirst} from 'lodash';
 
     export default {
         name: "resource-table",
@@ -130,19 +130,9 @@
                     } else {
                         filters.numericFilters.push(`${key}=${value}`)
                     }
-                })
+                });
 
                 return filters;
-            },
-
-            filtersForApi() {
-                return flatMap(this.filters, (value, key) => {
-                    let filter = {};
-
-                    filter[`filter[${key}]`] = value;
-
-                    return filter;
-                });
             }
         },
 
@@ -151,6 +141,10 @@
         },
 
         methods: {
+            get(item, key) {
+                return lodashGet(item, key);
+            },
+
             navigateToDetails(item) {
                 this.$router.push({
                     name: `${this.resource}/details`,
@@ -193,7 +187,7 @@
                     canCancel: true
                 });
 
-                const { data } = await this.$store.dispatch(`fetch${upperFirst(this.resource)}`, this._makeApiParams(page));
+                const data = await this.$store.dispatch(`fetch${upperFirst(this.resource)}`, this._makeApiParams(page));
 
                 this.content = data.data;
 
@@ -212,7 +206,8 @@
                     perPage: this.pagination.per_page
                 };
 
-                Object.assign(params, ...this.filtersForApi);
+                Object.assign(params, this.filters);
+                console.log(params);
 
                 return params;
             },

@@ -25,7 +25,12 @@ $factory->define(App\User::class, function (Faker $faker) {
     ];
 });
 
-$factory->state(\App\User::class, 'player', ['type' => \App\Enums\UserType::Player]);
+$factory->state(\App\User::class, 'player', function (Faker $faker) {
+    return [
+        'type' => \App\Enums\UserType::Player,
+        'account_name' => $faker->firstName
+    ];
+});
 $factory->state(\App\User::class, 'admin', ['type' => \App\Enums\UserType::Admin]);
 $factory->state(\App\User::class, 'moderator', ['type' => \App\Enums\UserType::Moderator]);
 

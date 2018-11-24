@@ -19,7 +19,11 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        return true;
+        if ($user->type === UserType::Admin) {
+            return true;
+        }
+
+        return $user->is($model);
     }
 
     /**

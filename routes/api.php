@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +18,5 @@ Route::middleware('auth:api')->patch('/current-user', 'API\UpdateCurrentUser')->
 
 Route::middleware(['auth:api'])->delete('comments/{comment}', 'API\DeleteComment')->name('comments.destroy');
 Route::middleware(['auth:api'])->match(['PUT', 'PATCH'], 'comments/{comment}', 'API\UpdateComment')->name('comments.update');
+
+Route::middleware(['auth:api'])->get('game-accounts', 'API\ListGameAccounts')->name('game-accounts.index');
