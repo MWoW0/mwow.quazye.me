@@ -15,7 +15,7 @@ class AccountResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'username' => $this->resource->username,
+            'name' => $this->resource->username,
             'email' => $this->resource->email,
             'gmLevel' => $this->resource->gmlevel
         ];
