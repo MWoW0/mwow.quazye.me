@@ -5,14 +5,13 @@ namespace App\Concerns;
 use App\Contracts\Emulator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use function tap;
 
 trait EmulatorDatabases
 {
     public static function bootEmulatorDatabases()
     {
-        static::setConnectionResolver(
-            resolve(Emulator::class)->database()->connectionResolver()
-        );
+        // resolve(Emulator::class)->database()->configureModel(new self);
     }
 
     /**
@@ -24,9 +23,9 @@ trait EmulatorDatabases
      */
     public static function makeWithEmulator(Emulator $emulator, array $attributes = [])
     {
-        static::setConnectionResolver($emulator->database()->connectionResolver());
-
-        return new static($attributes);
+        return tap(new static($attributes), function (Model $model) use ($emulator) {
+            $emulator->database()->configureModel($model);
+        });
     }
 
     /**
@@ -38,8 +37,22 @@ trait EmulatorDatabases
      */
     public static function createWithEmulator(Emulator $emulator, array $attributes = [])
     {
-        return tap(static::makeWithEmulator($emulator, $attributes), function ($model) {
+        return tap(static::makeWithEmulator($emulator, $attributes), function (Model $model) use ($attributes) {
             $model->saveOrFail();
         });
+    }
+
+    /**
+     * Create a new instance of the model
+     *
+     * @param Emulator $emulator
+     * @param array $attributes
+     * @return Model
+     */
+    public static function firstOrCreateWithEmulator(Emulator $emulator, array $attributes = [])
+    {
+        $emulator->database()->configureModel($model = new static);
+
+        return $model->firstOrCreate($attributes);
     }
 }

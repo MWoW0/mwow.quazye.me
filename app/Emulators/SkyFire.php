@@ -3,7 +3,6 @@
 namespace App\Emulators;
 
 use App\Contracts\Emulator;
-use App\Mail;
 use function array_get;
 use function config;
 
@@ -15,6 +14,23 @@ class SkyFire implements Emulator
      * @var EmulatorDatabase
      */
     protected $database;
+
+    /**
+     * The WoW expansion name
+     *
+     * @var string
+     */
+    protected $expansion;
+
+    /**
+     * The WoW expansion name
+     *
+     * @return string|null
+     */
+    public function expansion(): ?string
+    {
+        return $this->expansion;
+    }
 
     /**
      * Get a value from the emulators configurations
@@ -39,16 +55,6 @@ class SkyFire implements Emulator
         }
 
         return $this->database = new EmulatorDatabase($this);
-    }
-
-    /**
-     * Get a mail model configured with the current emulator
-     *
-     * @return Mail
-     */
-    public function mail()
-    {
-        return Mail::makeWithEmulator($this);
     }
 
     /**

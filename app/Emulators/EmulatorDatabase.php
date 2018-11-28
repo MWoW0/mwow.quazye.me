@@ -4,10 +4,11 @@ namespace App\Emulators;
 
 use App\Contracts\Emulator;
 use App\Contracts\Emulators\ResolvesDatabaseConnections;
-use function config;
-use Illuminate\Database\ConnectionResolver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use function class_basename;
+use function config;
 
 class EmulatorDatabase implements ResolvesDatabaseConnections
 {
@@ -26,69 +27,37 @@ class EmulatorDatabase implements ResolvesDatabaseConnections
     public function __construct(Emulator $emulator)
     {
         $this->emulator = $emulator;
-
-        $this->registerConfigurations();
-        $this->addConnections();
     }
 
     /**
-     * Add the current emulators database configurations
+     * Configure given model for establishing database connections to the current emulator.
      *
-     * @return void
+     * @param Model $model
+     * @return Model
      */
-    public function registerConfigurations()
+    public function configureModel(Model $model)
     {
-        $connections = config('database.connections');
-
-        $connections['auth'] = $this->emulator->config('db_auth');
-        $connections['characters'] = $this->emulator->config('db_characters');
-        $connections['world'] = $this->emulator->config('db_world');
-
-        config(['database.connections' => $connections]);
-    }
-
-    /**
-     * Extend the emulator database connections into the current connection resolver
-     *
-     * @return void
-     */
-    public function addConnections()
-    {
-        $this->connectionResolver()->extend('auth', function () {
+        $model::getConnectionResolver()->extend('auth', function () {
             return $this->auth();
         });
 
-        $this->connectionResolver()->extend('characters', function () {
-            return $this->characters();
-        });
+        $envPrefix = Str::upper($emulatorClass = class_basename($this->emulator));
+        config(['database.connections.auth' => [
+            'driver' => 'mysql',
+            'host' => env("{$envPrefix}_DB_HOST", '127.0.0.1'),
+            'port' => env("{$envPrefix}_DB_PORT", '3306'),
+            'database' => env("{$envPrefix}_DB_DATABASE", $this->emulator->expansion() ? "{$this->emulator->expansion()}_realm" : Str::lower("{$emulatorClass}_auth")),
+            'username' => env("{$envPrefix}_DB_USERNAME", env('DB_USERNAME')),
+            'password' => env("{$envPrefix}_DB_PASSWORD", env('DB_PASSWORD')),
+            'unix_socket' => env("{$envPrefix}_DB_SOCKET", ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_general_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ]]);
 
-        $this->connectionResolver()->extend('world', function () {
-            return $this->world();
-        });
-    }
-
-    /**
-     * Get the database connection resolver
-     *
-     * @return \Illuminate\Database\DatabaseManager|\Illuminate\Database\ConnectionResolverInterface
-     */
-    public function connectionResolver()
-    {
-        return Model::getConnectionResolver();
-    }
-
-    /**
-     * Create a new database connection resolver
-     *
-     * @return \Illuminate\Database\ConnectionResolverInterface
-     */
-    public function newConnectionResolver()
-    {
-        return new ConnectionResolver([
-            'auth' => $this->auth(),
-            'characters' => $this->characters(),
-            'world' => $this->world()
-        ]);
+        return $model;
     }
 
     /**
@@ -100,30 +69,6 @@ class EmulatorDatabase implements ResolvesDatabaseConnections
     {
         return DB::connection(
             $this->emulator->config('db_auth')
-        );
-    }
-
-    /**
-     * Get a characters database connection
-     *
-     * @return \Illuminate\Database\ConnectionInterface
-     */
-    public function characters()
-    {
-        return DB::connection(
-            $this->emulator->config('db_characters')
-        );
-    }
-
-    /**
-     * Get a world database connection
-     *
-     * @return \Illuminate\Database\ConnectionInterface
-     */
-    public function world()
-    {
-        return DB::connection(
-            $this->emulator->config('db_world')
         );
     }
 }

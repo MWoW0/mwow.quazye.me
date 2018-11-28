@@ -20,4 +20,9 @@ class EmulatorManager extends Manager
     {
         return new SkyFire;
     }
+
+    public function createMangosCataclysmDriver()
+    {
+        return new Mangos('cataclysm');
+    }
 }

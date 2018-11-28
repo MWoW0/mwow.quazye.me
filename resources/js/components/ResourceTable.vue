@@ -1,6 +1,8 @@
 <template>
     <div class="resource-table">
-        <algolia-search-input class="my-2 p-4" :options="filtersForAlgolia" :resource="resource" @clear="fetchContent()" @results="showAlgoliaSearchResults" ref="searchInput"></algolia-search-input>
+        <algolia-search-input :options="filtersForAlgolia" :resource="resource" @clear="fetchContent()"
+                              @results="showAlgoliaSearchResults" class="my-2 p-4" ref="searchInput"
+                              v-if="searchable"></algolia-search-input>
 
         <small class="italic text-grey-darker text-sm mb-2">
             {{ __('Showing :perPage out of :total :resource ...', { perPage: this.pagination.per_page, total: this.pagination.total, resource: this.resource }) }}
@@ -64,6 +66,15 @@
                 type: Object,
                 required: false,
                 default: () => ({})
+            },
+
+            /**
+             * Whether the table should be searchable
+             **/
+            searchable: {
+                type: Boolean,
+                required: false,
+                default: true
             }
         },
 

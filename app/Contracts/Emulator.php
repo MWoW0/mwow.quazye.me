@@ -9,6 +9,13 @@ use App\Mail;
 interface Emulator
 {
     /**
+     * The WoW expansion name
+     *
+     * @return string|null
+     */
+    public function expansion(): ?string;
+
+    /**
      * Get a value from the emulators configurations
      *
      * @param  string|null $key
@@ -22,13 +29,6 @@ interface Emulator
      * @return EmulatorDatabase
      */
     public function database();
-
-    /**
-     * Get a mail model configured with the current emulator
-     *
-     * @return Mail
-     */
-    public function mail();
 
     /**
      * Get the emulator statistics

@@ -3,16 +3,19 @@
 namespace App\Jobs;
 
 use App\Account;
-use App\Contracts\Emulator;
+use App\Contracts\Emulator as EmulatorContract;
 use App\Emulators\EmulatorManager;
+use App\Facades\Emulator;
 use App\GameAccount;
 use App\Hashing\SillySha1;
+use App\Realm;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use function get_class;
 
 class CreateGameAccountJob implements ShouldQueue
 {
@@ -44,13 +47,12 @@ class CreateGameAccountJob implements ShouldQueue
      *
      * @param User $user
      * @param string $password
-     * @param array $emulators
      */
-    public function __construct($user, $password, array $emulators = ['SkyFire'])
+    public function __construct($user, $password)
     {
         $this->id = $user->id;
         $this->password = $password;
-        $this->emulators = $emulators;
+        $this->emulators = Emulator::getSupportedDrivers();
     }
 
     /**
@@ -61,36 +63,31 @@ class CreateGameAccountJob implements ShouldQueue
     public function handle(EmulatorManager $manager = null)
     {
         $manager = $manager ?? resolve(EmulatorManager::class);
+        /** @var User $user */
+        $user = User::query()->findOrFail($this->id);
 
-        try {
-            /** @var User $user */
-            $user = User::query()->findOrFail($this->id);
+        foreach ($this->emulators as $emulator) {
+            /** @var EmulatorContract $driver */
+            $driver = $manager->driver($emulator);
 
-            foreach ($this->emulators as $emulator) {
-                /** @var Emulator $driver */
-                $driver = $manager->driver($emulator);
+            /** @var Account $account */
+            $account = Account::firstOrCreateWithEmulator($driver, [
+                'last_login' => now(),
+                'username' => $user->account_name,
+                'email' => $user->email,
+                'sha_pass_hash' => (new SillySha1)->make($this->password, ['account' => $user->account_name]),
+            ]);
 
-                $account = Account::createWithEmulator($driver, [
-                    'last_login' => now(),
-                    'username' => $user->account_name,
-                    'email' => $user->email,
-                    'sha_pass_hash' => (new SillySha1)->make($this->password, ['account' => $user->account_name]),
-                ]);
-
-                $driver
-                    ->database()
-                    ->auth()
-                    ->table('realmlist')
-                    ->orderBy('id')
-                    ->each(function ($realm) use ($account, $user, $driver) {
-                        GameAccount::link($account, $user)
-                            ->onRealm($realm)
-                            ->through($driver)
-                            ->save();
-                    });
-            }
-        } catch (\Exception $e) {
-            $this->fail($e);
+            Realm::makeWithEmulator($driver)
+                ->orderBy('id')
+                ->each(function ($realm) use ($account, $user, $driver) {
+                    GameAccount::query()->firstOrCreate([
+                        'user_id' => $user->id,
+                        'account_id' => $account->id,
+                        'realm_id' => $realm->id,
+                        'emulator' => get_class($driver)
+                    ]);
+                });
         }
     }
 }

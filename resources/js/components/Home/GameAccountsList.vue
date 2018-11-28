@@ -6,6 +6,7 @@
                 ref="gameAccountsTable"
                 :filters="{ player_id: currentUser.id }"
                 resource="GameAccounts"
+                :searchable="false"
         ></resource-table>
     </section>
 </template>

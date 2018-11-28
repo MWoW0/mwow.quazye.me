@@ -3,28 +3,17 @@
 namespace App\Contracts\Emulators;
 
 
+use Illuminate\Database\Eloquent\Model;
+
 interface ResolvesDatabaseConnections
 {
     /**
-     * Get the database connection resolver
+     * Configure given model for establishing database connections to the current emulator.
      *
-     * @return \Illuminate\Database\ConnectionResolverInterface
+     * @param Model $model
+     * @return Model
      */
-    public function connectionResolver();
-
-    /**
-     * Create a new database connection resolver
-     *
-     * @return \Illuminate\Database\ConnectionResolverInterface
-     */
-    public function newConnectionResolver();
-
-    /**
-     * Get a characters database connection
-     *
-     * @return \Illuminate\Database\Connection
-     */
-    public function characters();
+    public function configureModel(Model $model);
 
     /**
      * Get a auth database connection
@@ -32,11 +21,4 @@ interface ResolvesDatabaseConnections
      * @return \Illuminate\Database\Connection
      */
     public function auth();
-
-    /**
-     * Get a world database connection
-     *
-     * @return \Illuminate\Database\Connection
-     */
-    public function world();
 }
