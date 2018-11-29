@@ -4,8 +4,6 @@ namespace Tests\Unit;
 
 use App\Facades\Emulator;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SupportedEmulatorsTest extends TestCase
 {
@@ -23,13 +21,13 @@ class SupportedEmulatorsTest extends TestCase
     /** @test */
     public function itListsTheSupportedEmulators()
     {
-        $this->assertEquals(['SkyFire'], Emulator::supported());
+        $this->assertEquals(['SkyFire', 'Mangos'], Emulator::supported());
     }
 
     /** @test */
     public function itChecksWhetherGivenEmulatorIsSupported()
     {
-        $this->assertTrue(Emulator::supported('SkyFire'));
-        $this->assertFalse(Emulator::supported('InvalidDriverName'));
+        $this->assertTrue(Emulator::isSupported('SkyFire'));
+        $this->assertFalse(Emulator::isSupported('InvalidDriverName'));
     }
 }

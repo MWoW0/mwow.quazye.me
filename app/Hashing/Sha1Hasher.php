@@ -13,7 +13,7 @@ use Illuminate\Contracts\Hashing\Hasher;
  *
  * @package App\Hashing
  */
-class SillySha1 implements Hasher
+class Sha1Hasher implements Hasher
 {
     /**
      * Get information about the given hashed value.

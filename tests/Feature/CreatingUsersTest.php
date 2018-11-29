@@ -6,7 +6,6 @@ use App\Account;
 use App\Contracts\Emulator;
 use App\Emulators\EmulatorManager;
 use App\User;
-use Illuminate\Foundation\Testing\Constraints\HasInDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -22,7 +21,7 @@ class CreatingUsersTest extends TestCase
         parent::setUp();
 
         $this->createSkyFireAuthDatabase();
-        $this->createMangosAuthDatabase('cataclysm');
+        $this->createMangosAuthDatabase();
     }
 
     /**
@@ -49,22 +48,21 @@ class CreatingUsersTest extends TestCase
 
         $manager = $this->app->make(EmulatorManager::class);
         $this->assertAccountCreated('john@example.com', $manager->driver('skyfire'));
-        $this->assertAccountCreated('john@example.com', $manager->driver('mangosCataclysm'));
+        $this->assertAccountCreated('john@example.com', $manager->driver('mangos'));
     }
 
     private function assertAccountCreated(string $email, Emulator $emulator)
     {
         $userId = User::query()->where('email', $email)->value('id');
 
-        $this->assertThat(
-            'account', new HasInDatabase($emulator->database()->auth(), [
-                'username' => 'john',
-                'sha_pass_hash' => '0639C9915279A92A5AAF84FF50FBA680B06152CF',
-                'email' => 'john@example.com'
-            ])
-        );
+        $this->assertDatabaseHas('account', [
+            'username' => 'john',
+            'sha_pass_hash' => '0639C9915279A92A5AAF84FF50FBA680B06152CF',
+            'email' => 'john@example.com'
+        ], $emulator->connectionName());
 
-        $accountId = Account::makeWithEmulator($emulator)->where('email', $email)->value('id');
+
+        $accountId = Account::connectedTo($emulator)->where('email', $email)->value('id');
 
         $this->assertDatabaseHas('game_accounts', [
             'user_id' => $userId,

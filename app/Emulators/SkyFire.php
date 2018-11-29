@@ -2,59 +2,81 @@
 
 namespace App\Emulators;
 
+use App\Account;
 use App\Contracts\Emulator;
-use function array_get;
+use App\GameAccount;
+use App\Hashing\Sha1Hasher;
+use App\Realm;
+use App\User;
+use Illuminate\Database\Eloquent\Model;
 use function config;
+use function now;
 
 class SkyFire implements Emulator
 {
     /**
-     * Get the database capsule instance
+     * Name of the database connection
      *
-     * @var EmulatorDatabase
+     * @return string
      */
-    protected $database;
-
-    /**
-     * The WoW expansion name
-     *
-     * @var string
-     */
-    protected $expansion;
-
-    /**
-     * The WoW expansion name
-     *
-     * @return string|null
-     */
-    public function expansion(): ?string
+    public function connectionName(): string
     {
-        return $this->expansion;
+        return 'skyfire';
     }
 
     /**
-     * Get a value from the emulators configurations
-     *
-     * @param  string|null $key
+     * @param string|null $key
+     * @param mixed|null $default
      * @return mixed
      */
-    public function config($key = null)
+    public function config(string $key = null, $default = null)
     {
-        return array_get(config('services.skyfire'), $key);
+        return config("services.skyfire.{$key}", $default);
     }
 
     /**
-     * Get the emulator database connections capsule
-     *
-     * @return EmulatorDatabase
+     * @param User $user
+     * @param string $password
+     * @throws \Throwable
+     * @return Account
      */
-    public function database()
+    public function createAccount(User $user, string $password): Account
     {
-        if ($this->database) {
-            return $this->database;
-        }
+        $account = $this->connectModel(new Account);
 
-        return $this->database = new EmulatorDatabase($this);
+        $account->last_login = now();
+        $account->username = $user->account_name;
+        $account->email = $user->email;
+        $account->sha_pass_hash = (new Sha1Hasher)->make($password, ['account' => $user->account_name]);
+
+        $account->saveOrFail();
+
+        $this->connectModel(new Realm)
+            ->newQuery()
+            ->oldest('id')
+            ->each(function (Realm $realm) use ($account, $user) {
+                GameAccount::query()->firstOrCreate([
+                    'user_id' => $user->getKey(),
+                    'account_id' => $account->getKey(),
+                    'realm_id' => $realm->getKey(),
+                    'emulator' => static::class
+                ]);
+            });
+
+        return $account;
+    }
+
+    /**
+     * Connect the model to the emulators database
+     *
+     * @param Model $model
+     * @return Model
+     */
+    public function connectModel(Model $model): Model
+    {
+        $model->setConnection($this->connectionName());
+
+        return $model;
     }
 
     /**
@@ -62,7 +84,7 @@ class SkyFire implements Emulator
      *
      * @return EmulatorStatistics
      */
-    public function statistics()
+    public function statistics(): EmulatorStatistics
     {
         return new EmulatorStatistics($this);
     }

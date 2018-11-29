@@ -2,38 +2,15 @@
 
 namespace App;
 
-use App\Contracts\Emulator;
+use App\Facades\Emulator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use function is_object;
 
 class GameAccount extends Model
 {
     protected $fillable = [
-        'user_id', 'account_id', 'realm_id', 'emulator'
+        'user_id', 'account_id', 'realm_id', 'emulator', 'expansion'
     ];
-
-    public static function link(Account $account, User $toUser)
-    {
-        return new static([
-            'account_id' => $account->id,
-            'user_id' => $toUser->id
-        ]);
-    }
-
-    public function through(Emulator $emulator)
-    {
-        return $this->fill([
-            'emulator' => get_class($emulator)
-        ]);
-    }
-
-    public function onRealm($realm)
-    {
-        return $this->fill([
-            'realm_id' => is_object($realm) ? $realm->id : $realm
-        ]);
-    }
 
     public function user(): BelongsTo
     {
@@ -42,11 +19,33 @@ class GameAccount extends Model
 
     public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        $emulator = Emulator::driver($this->emulator);
+        $emulator->expansion = $this->expansion;
+
+        $account = Account::connectedTo($emulator);
+
+        return $this->newBelongsTo(
+            $account->newQuery(),
+            $this,
+            'account_id',
+            $account->getKeyName(),
+            null
+        );
     }
 
     public function realm(): BelongsTo
     {
-        return $this->belongsTo(Realm::class, 'realm_id');
+        $emulator = Emulator::driver($this->emulator);
+        $emulator->expansion = $this->expansion;
+
+        $realm = Realm::connectedTo($emulator);
+
+        return $this->newBelongsTo(
+            $realm->newQuery(),
+            $this,
+            'realm_id',
+            $realm->getKeyName(),
+            null
+        );
     }
 }

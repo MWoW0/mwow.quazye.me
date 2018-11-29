@@ -6,11 +6,20 @@ use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
+use Tests\TestsEmulatorDatabases;
 use function factory;
 
 class ListingGameAccountsTest extends TestCase
 {
-    use RefreshDatabase, HasSkyFireDatabases;
+    use RefreshDatabase, TestsEmulatorDatabases;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->createSkyFireAuthDatabase();
+        $this->createMangosAuthDatabase();
+    }
 
     /**
      * @test
@@ -24,7 +33,7 @@ class ListingGameAccountsTest extends TestCase
             ->actingAs($player)
             ->json('GET', '/api/game-accounts', ['player_id' => $player->id])
             ->assertSuccessful()
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(2, 'data')
             ->assertSee($player->account_name);
     }
 
@@ -43,7 +52,7 @@ class ListingGameAccountsTest extends TestCase
             ->actingAs($playerOne)
             ->json('GET', '/api/game-accounts', ['player_id' => $playerOne->id])
             ->assertSuccessful()
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(2, 'data')
             ->assertSee($playerOne->account_name)
             ->assertDontSee($playerTwo->account_name);
 
@@ -68,14 +77,7 @@ class ListingGameAccountsTest extends TestCase
             ->actingAs($admin)
             ->json('GET', '/api/game-accounts', ['player_id' => $player->id])
             ->assertSuccessful()
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(2, 'data')
             ->assertSee($player->account_name);
-    }
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->createSkyFireAuthDatabase();
     }
 }

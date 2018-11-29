@@ -60,7 +60,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersOnline()
     {
-        return Account::makeWithEmulator($this->emulator)->online()->count();
+        return Account::online($this->emulator)->count('id');
     }
 
     /**
@@ -70,7 +70,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersActive()
     {
-        return Account::makeWithEmulator($this->emulator)->active()->count();
+        return Account::active($this->emulator)->count('id');
     }
 
     /**
@@ -80,7 +80,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersInactive()
     {
-        return Account::makeWithEmulator($this->emulator)->inactive()->count();
+        return Account::inactive($this->emulator)->count('id');
     }
 
     /**
@@ -90,7 +90,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersRecentlyCreated()
     {
-        return Account::makeWithEmulator($this->emulator)->recentlyCreated()->count();
+        return Account::recentlyCreated($this->emulator)->count('id');
     }
 
     /**
@@ -100,6 +100,6 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersTotal()
     {
-        return Account::makeWithEmulator($this->emulator)->count();
+        return Account::connectedTo($this->emulator)->count();
     }
 }

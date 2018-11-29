@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Account;
 use App\GameAccount;
-use App\Hashing\SillySha1;
+use App\Hashing\Sha1Hasher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,7 +25,7 @@ class UpdateAccountPasswords implements ShouldQueue
      */
     public function __construct($user, $password)
     {
-        $this->password = (new SillySha1)->make($password, ['user' => $user->account_name]);
+        $this->password = (new Sha1Hasher)->make($password, ['user' => $user->account_name]);
         $this->accounts = $user->gameAccounts->mapToGroups(function (GameAccount $account) {
             return [$account->emulator => $account->id];
         });
@@ -39,7 +39,7 @@ class UpdateAccountPasswords implements ShouldQueue
     public function handle()
     {
         foreach ($this->accounts as $emulator => $ids) {
-            Account::makeWithEmulator(resolve($emulator))
+            Account::connectedTo(resolve($emulator))
                 ->whereIn('id', $ids)
                 ->update([
                     'sha_pass_hash' => $this->password

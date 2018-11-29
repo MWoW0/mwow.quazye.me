@@ -32,48 +32,34 @@ return [
     */
 
     'connections' => [
-
-        'skyfire_auth' => [
+        'mangos' => [
             'driver' => 'mysql',
-            'host' => env('SKYFIRE_DB_HOST', '127.0.0.1'),
-            'port' => env('SKYFIRE_DB_PORT', '3306'),
-            'database' => env('SKYFIRE_DB_AUTH', 'skyfire_auth'),
-            'username' => env('SKYFIRE_DB_USERNAME', env('DB_USERNAME')),
-            'password' => env('SKYFIRE_DB_PASSWORD', env('DB_PASSWORD')),
-            'unix_socket' => env('SKYFIRE_DB_SOCKET', ''),
+            'host' => env('MANGOS_DB_HOST', '127.0.0.1'),
+            'port' => env('MANGOS_DB_PORT', '3306'),
+            'database' => env('MANGOS_DB_DATABASE', 'forge'),
+            'username' => env('MANGOS_DB_USERNAME', 'forge'),
+            'password' => env('MANGOS_DB_PASSWORD', ''),
+            'unix_socket' => env('MANGOS_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',
+            'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
         ],
 
-        'skyfire_characters' => [
+        'skyfire' => [
             'driver' => 'mysql',
             'host' => env('SKYFIRE_DB_HOST', '127.0.0.1'),
             'port' => env('SKYFIRE_DB_PORT', '3306'),
-            'database' => env('SKYFIRE_DB_CHARACTERS', 'skyfire_characters'),
-            'username' => env('SKYFIRE_DB_USERNAME', env('DB_USERNAME')),
-            'password' => env('SKYFIRE_DB_PASSWORD', env('DB_PASSWORD')),
+            'database' => env('SKYFIRE_DB_DATABASE', 'forge'),
+            'username' => env('SKYFIRE_DB_USERNAME', 'forge'),
+            'password' => env('SKYFIRE_DB_PASSWORD', ''),
             'unix_socket' => env('SKYFIRE_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',
-            'strict' => true,
-            'engine' => null,
-        ],
-
-        'skyfire_world' => [
-            'driver' => 'mysql',
-            'host' => env('SKYFIRE_DB_HOST', '127.0.0.1'),
-            'port' => env('SKYFIRE_DB_PORT', '3306'),
-            'database' => env('SKYFIRE_DB_WORLD', 'skyfire_world'),
-            'username' => env('SKYFIRE_DB_USERNAME', env('DB_USERNAME')),
-            'password' => env('SKYFIRE_DB_PASSWORD', env('DB_PASSWORD')),
-            'unix_socket' => env('SKYFIRE_DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_general_ci',
-            'prefix' => '',
+            'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
         ],

@@ -13,7 +13,7 @@ class EmulatorManager extends Manager
      */
     public function getDefaultDriver()
     {
-        return 'SkyFire';
+        return 'Mangos';
     }
 
     public function createSkyFireDriver()
@@ -21,8 +21,8 @@ class EmulatorManager extends Manager
         return new SkyFire;
     }
 
-    public function createMangosCataclysmDriver()
+    public function createMangosDriver()
     {
-        return new Mangos('cataclysm');
+        return new Mangos;
     }
 }

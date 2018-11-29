@@ -2,34 +2,36 @@
 
 namespace App\Facades;
 
+use App\Contracts\Emulator as EmulatorContract;
 use App\Emulators\EmulatorManager;
 use Illuminate\Support\Facades\Facade;
 
 class Emulator extends Facade
 {
+    public static function driver($name = null): EmulatorContract
+    {
+        return static::getFacadeRoot()->driver($name);
+    }
+
     /**
      * Get an array of supported emulator driver names or check if given is supported
      *
-     * @param string|null $driver
+     * @param string $emulator
+     * @throws \ReflectionException
      * @return array|bool
      */
-    public static function supported($driver = null)
+    public static function isSupported(string $emulator): bool
     {
-        $supportedDrivers = static::getSupportedDrivers();
-
-        if ($driver) {
-            return in_array($driver, $supportedDrivers);
-        }
-
-        return $supportedDrivers;
+        return in_array($emulator, self::supported());
     }
 
     /**
      * Get an array of supported emulator driver names
      *
+     * @throws \ReflectionException
      * @return array
      */
-    public static function getSupportedDrivers()
+    public static function supported(): array
     {
         $reflection = new \ReflectionClass(static::getFacadeAccessor());
 
