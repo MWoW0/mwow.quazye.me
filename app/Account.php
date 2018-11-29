@@ -7,6 +7,7 @@ use App\Contracts\Emulator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use function blank;
 
 /**
  * Class Account
@@ -40,6 +41,18 @@ class Account extends Model
      * @var array
      */
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (Account $account) {
+            // Some databases force fills an invalid default date, this avoids query exceptions on that regard.
+            if (blank($account->last_login)) {
+                $account->last_login = $account->freshTimestampString();
+            }
+        });
+    }
 
     /**
      * Find the account(s) for given User

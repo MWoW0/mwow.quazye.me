@@ -10,7 +10,6 @@ use App\Realm;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use function config;
-use function now;
 
 class SkyFire implements Emulator
 {
@@ -42,14 +41,11 @@ class SkyFire implements Emulator
      */
     public function createAccount(User $user, string $password): Account
     {
-        $account = $this->connectModel(new Account);
-
-        $account->last_login = now();
-        $account->username = $user->account_name;
-        $account->email = $user->email;
-        $account->sha_pass_hash = (new Sha1Hasher)->make($password, ['account' => $user->account_name]);
-
-        $account->saveOrFail();
+        $account = Account::connectedTo($this)->firstOrCreate([
+            'username' => $user->account_name,
+            'email' => $user->email,
+            'sha_pass_hash' => (new Sha1Hasher)->make($password, ['account' => $user->account_name])
+        ]);
 
         $this->connectModel(new Realm)
             ->newQuery()
