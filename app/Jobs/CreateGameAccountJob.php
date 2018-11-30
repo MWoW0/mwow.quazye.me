@@ -11,6 +11,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use function decrypt;
+use function encrypt;
 
 class CreateGameAccountJob implements ShouldQueue
 {
@@ -53,7 +55,7 @@ class CreateGameAccountJob implements ShouldQueue
     public function __construct($user, $password)
     {
         $this->id = $user->id;
-        $this->password = $password;
+        $this->password = encrypt($password);
         $this->emulators = Emulator::supported();
     }
 
@@ -72,7 +74,7 @@ class CreateGameAccountJob implements ShouldQueue
             /** @var EmulatorContract $driver */
             $driver = $manager->driver($emulator);
 
-            $driver->createAccount($user, $this->password);
+            $driver->createAccount($user, decrypt($this->password));
         }
     }
 }
