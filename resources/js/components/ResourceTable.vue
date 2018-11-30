@@ -218,7 +218,6 @@
                 };
 
                 Object.assign(params, this.filters);
-                console.log(params);
 
                 return params;
             },

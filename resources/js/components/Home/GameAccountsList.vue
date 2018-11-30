@@ -41,5 +41,24 @@
                 ];
             }
         },
+
+        watch: {
+            currentUser: {
+                handler: function (user) {
+                    if (user) {
+                        Echo.private(`App.User.${user.id}`)
+                            .listen('GameAccountCreated', (gameAccount) => this.$store.commit('ADD_GAME_ACCOUNT', gameAccount))
+                            .listen('GameAccountUpdated', (gameAccount) => this.$store.commit('UPDATE_GAME_ACCOUNT', gameAccount))
+                            .listen('GameAccountDeleted', (gameAccount) => this.$store.commit('DELETE_GAME_ACCOUNT', gameAccount))
+                    }
+                },
+
+                immediate: true
+            }
+        },
+
+        beforeDestroy() {
+            Echo.leave(`App.User.${user.id}`);
+        }
     }
 </script>

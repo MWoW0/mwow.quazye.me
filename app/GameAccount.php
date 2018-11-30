@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Events\GameAccountCreated;
+use App\Events\GameAccountDeleted;
+use App\Events\GameAccountUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use function resolve;
@@ -11,6 +14,12 @@ class GameAccount extends Model
 {
     protected $fillable = [
         'user_id', 'account_id', 'realm_id', 'emulator', 'expansion'
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => GameAccountCreated::class,
+        'updated' => GameAccountUpdated::class,
+        'deleted' => GameAccountDeleted::class
     ];
 
     public function user(): BelongsTo
