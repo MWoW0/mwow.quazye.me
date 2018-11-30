@@ -11,6 +11,11 @@ class SupportedEmulatorsTest extends TestCase
     /** @test */
     public function itListsTheSupportedEmulators()
     {
+        config([
+            'services.skyfire.supported' => true,
+            'services.mangos.supported' => true
+        ]);
+
         $this->assertEquals(['SkyFire', 'Mangos'], Emulator::supported());
 
         config(['services.skyfire.supported' => false]);
@@ -21,6 +26,7 @@ class SupportedEmulatorsTest extends TestCase
     /** @test */
     public function itChecksWhetherGivenEmulatorIsSupported()
     {
+        config(['services.skyfire.supported' => true]);
         $this->assertTrue(Emulator::isSupported('SkyFire'));
         $this->assertFalse(Emulator::isSupported('InvalidDriverName'));
 

@@ -19,6 +19,11 @@ class UpdatingUsersTest extends TestCase
     {
         parent::setUp();
 
+        config([
+            'services.skyfire.supported' => true,
+            'services.mangos.supported' => true
+        ]);
+
         $this->createMangosAuthDatabase();
         $this->createSkyFireAuthDatabase();
     }

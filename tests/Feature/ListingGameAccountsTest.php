@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
 use Tests\TestsEmulatorDatabases;
 use function factory;
@@ -16,6 +15,11 @@ class ListingGameAccountsTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+
+        config([
+            'services.skyfire.supported' => true,
+            'services.mangos.supported' => true
+        ]);
 
         $this->createSkyFireAuthDatabase();
         $this->createMangosAuthDatabase();
