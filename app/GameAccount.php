@@ -2,9 +2,10 @@
 
 namespace App;
 
-use App\Facades\Emulator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use function resolve;
+use function tap;
 
 class GameAccount extends Model
 {
@@ -17,35 +18,79 @@ class GameAccount extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function account(): BelongsTo
+    /**
+     * @return Model|Account|null
+     */
+    public function resolveAccount()
     {
-        $emulator = Emulator::driver($this->emulator);
+        if ($this->relationLoaded('account')) {
+            return $this->getRelation('account');
+        }
+
+        $emulator = resolve($this->emulator);
         $emulator->expansion = $this->expansion;
 
-        $account = Account::connectedTo($emulator);
-
-        return $this->newBelongsTo(
-            $account->newQuery(),
-            $this,
-            'account_id',
-            $account->getKeyName(),
-            null
-        );
+        return tap(Account::connectedTo($emulator)->findOrFail($this->account_id), function ($account) {
+            $this->setRelation('account', $account);
+        });
     }
 
-    public function realm(): BelongsTo
+    public function getAccountAttribute()
     {
-        $emulator = Emulator::driver($this->emulator);
+        return $this->resolveAccount();
+    }
+
+    /**
+     * @return Model|Realm|null
+     */
+    public function resolveRealm()
+    {
+        if ($this->relationLoaded('realm')) {
+            return $this->getRelation('realm');
+        }
+
+        $emulator = resolve($this->emulator);
         $emulator->expansion = $this->expansion;
 
-        $realm = Realm::connectedTo($emulator);
-
-        return $this->newBelongsTo(
-            $realm->newQuery(),
-            $this,
-            'realm_id',
-            $realm->getKeyName(),
-            null
-        );
+        return tap(Realm::connectedTo($emulator)->findOrFail($this->realm_id), function ($realm) {
+            $this->setRelation('realm', $realm);
+        });
     }
+
+    public function getRealmAttribute()
+    {
+        return $this->resolveRealm();
+    }
+
+//    public function account(): BelongsTo
+//    {
+//        $emulator = resolve($this->emulator);
+//        $emulator->expansion = $this->expansion;
+//
+//        $account = Account::connectedTo($emulator);
+//
+//        return $this->newBelongsTo(
+//            $account->newQuery(),
+//            $this,
+//            'account_id',
+//            $account->getKeyName(),
+//            null
+//        );
+//    }
+//
+//    public function realm(): BelongsTo
+//    {
+//        $emulator = resolve($this->emulator);
+//        $emulator->expansion = $this->expansion;
+//
+//        $realm = Realm::connectedTo($emulator);
+//
+//        return $this->newBelongsTo(
+//            $realm->newQuery(),
+//            $this,
+//            'realm_id',
+//            $realm->getKeyName(),
+//            null
+//        );
+//    }
 }

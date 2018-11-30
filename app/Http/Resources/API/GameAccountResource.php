@@ -16,12 +16,8 @@ class GameAccountResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
-            'account' => $this->whenLoaded('account', function () {
-                return new AccountResource($this->resource->account);
-            }),
-            'realm' => $this->whenLoaded('realm', function () {
-                return new RealmResource($this->resource->realm);
-            })
+            'account' => new AccountResource($this->resource->account),
+            'realm' => new RealmResource($this->resource->realm)
         ];
     }
 }

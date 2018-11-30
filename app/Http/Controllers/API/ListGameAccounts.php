@@ -24,7 +24,7 @@ class ListGameAccounts extends Controller
 
         $this->authorize('view', $user);
 
-        $accounts = QueryBuilder::for($user->gameAccounts()->with(['realm', 'account'])->getQuery(), $request)
+        $accounts = QueryBuilder::for($user->gameAccounts()->getQuery(), $request)
             ->paginate(
                 $validated['perPage'] ?? 15,
                 ['*'],
