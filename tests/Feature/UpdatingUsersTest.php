@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Facades\Emulator;
+use App\Emulator;
 use App\Hashing\Sha1Hasher;
 use App\User;
 use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
 use Tests\TestsEmulatorDatabases;
 
@@ -19,13 +18,7 @@ class UpdatingUsersTest extends TestCase
     {
         parent::setUp();
 
-        config([
-            'services.skyfire.supported' => true,
-            'services.mangos.supported' => true
-        ]);
-
-        $this->createMangosAuthDatabase();
-        $this->createSkyFireAuthDatabase();
+        $this->createMangosAuthDatabases();
     }
 
     /** @test */
@@ -48,12 +41,11 @@ class UpdatingUsersTest extends TestCase
     		])
     		->assertRedirect('/home');
 
-    	$this->assertDatabaseHas('account', [
-            'sha_pass_hash' => (new Sha1Hasher)->make('superSecretPassword', ['user' => 'john']),
-        ], Emulator::driver('mangos')->connectionName());
-
-        $this->assertDatabaseHas('account', [
-            'sha_pass_hash' => (new Sha1Hasher)->make('superSecretPassword', ['user' => 'john']),
-        ], Emulator::driver('skyfire')->connectionName());
+        $password = (new Sha1Hasher)->make('superSecretPassword', ['user' => 'john']);
+        foreach (Emulator::collect()->mapToInstances() as $emulator) {
+            $this->assertDatabaseHas('account', [
+                'sha_pass_hash' => $password
+            ], $emulator->connectionName());
+        }
     } 
 }

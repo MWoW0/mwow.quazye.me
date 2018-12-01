@@ -46,19 +46,12 @@ return [
         'secret' => env('ALGOLIA_SECRET', ''),
     ],
 
-
-    'skyfire' => [
-        'supported' => env('SKYFIRE_SUPPORTED', true)
-    ],
-
     'mangos' => [
         'cataclysm' => [
-            'supported' => env('MANGOS_CATACLYSM_SUPPORTED', false),
             'db_auth' => env('MANGOS_CATACLYSM_DB_DATABASE', 'cata_realm')
         ],
 
         'wotlk' => [
-            'supported' => env('MANGOS_WOTLK_SUPPORTED', false),
             'db_auth' => env('MANGOS_WOTLK_DB_DATABASE', 'wotlk_realm')
         ]
     ]

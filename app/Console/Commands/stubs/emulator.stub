@@ -1,35 +1,19 @@
 <?php
 
-namespace App\Emulators;
-
+namespace DummyNamespace;
 
 use App\Account;
-use App\Contracts\Emulator;
 use App\GameAccount;
 use App\Hashing\Sha1Hasher;
 use App\Realm;
 use App\User;
+use App\Contracts\Emulator;
+use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Database\Eloquent\Model;
+use function config;
 
-class Mangos implements Emulator
+class DummyClass implements Emulator
 {
-    /**
-     * The WoW expansion name
-     *
-     * @var string
-     */
-    public $expansion;
-
-    /**
-     * Mangos constructor.
-     *
-     * @param string $expansion
-     */
-    public function __construct(string $expansion = null)
-    {
-        $this->expansion = $expansion;
-    }
-
     /**
      * The WoW expansion name
      *
@@ -37,17 +21,7 @@ class Mangos implements Emulator
      */
     public function expansion(): ?string
     {
-        return $this->expansion;
-    }
-
-    /**
-     * Name of the database connection
-     *
-     * @return string
-     */
-    public function connectionName(): string
-    {
-        return $this->config('db_auth', $this->expansion ? "mangos_{$this->expansion}" : 'mangos');
+        return 'DummyExpansion';
     }
 
     /**
@@ -59,11 +33,34 @@ class Mangos implements Emulator
      */
     public function config(string $key = null, $default = null)
     {
-        if ($this->expansion) {
-            return config("services.mangos.{$this->expansion}.{$key}", $default);
+        if ($key) {
+            return config("services.DummyCore.{$this->expansion()}.{$key}", $default);
         }
 
-        return config("services.mangos.{$key}", $default);
+        return config("services.DummyCore.{$this->expansion()}", $default);
+    }
+
+    /**
+     * Name of the database connection
+     *
+     * @return string
+     */
+    public function connectionName(): string
+    {
+        return $this->config('db_auth', "{$this->expansion()}_realm");
+    }
+
+    /**
+     * Connect the model to the emulators database
+     *
+     * @param Model $model
+     * @return Model
+     */
+    public function connectModel(Model $model): Model
+    {
+        $model->setConnection($this->connectionName());
+
+        return $model;
     }
 
     /**
@@ -91,7 +88,7 @@ class Mangos implements Emulator
                     'account_id' => $account->getKey(),
                     'realm_id' => $realm->getKey(),
                     'emulator' => static::class,
-                    'expansion' => $this->expansion
+                    'expansion' => $this->expansion()
                 ]);
             });
 
@@ -99,16 +96,13 @@ class Mangos implements Emulator
     }
 
     /**
-     * Connect the model to the emulators database
+     * List the realms this emulator has
      *
-     * @param Model $model
-     * @return Model
+     * @return DatabaseCollection
      */
-    public function connectModel(Model $model): Model
+    public function realms(): DatabaseCollection
     {
-        $model->setConnection($this->connectionName());
-
-        return $model;
+        return Realm::connectedTo($this)->get();
     }
 
     /**

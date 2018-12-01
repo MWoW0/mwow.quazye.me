@@ -2,48 +2,28 @@
 
 namespace Tests;
 
-
-use App\Emulators\Mangos;
-use App\Emulators\SkyFire;
 use Illuminate\Support\Facades\DB;
 
 trait TestsEmulatorDatabases
 {
-    /**
-     * @var string
-     */
-    protected $mangosConnection;
-
-    /**
-     * @var string
-     */
-    protected $skyfireConnection;
-
-    public function createSkyFireAuthDatabase()
+    public function createMangosAuthDatabases()
     {
-        $this->skyfireConnection = (new SkyFire)->config('db_auth', 'skyfire');
-
-        config(["database.connections.{$this->skyfireConnection}" => [
+        config(["database.connections.wotlk_realm" => [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', false),
         ]]);
 
-        DB::connection($this->skyfireConnection)->unprepared(file_get_contents(__DIR__ . '/Fixtures/skyfire_auth_sqlite3.sql'));
-    }
+        DB::connection('wotlk_realm')->unprepared(file_get_contents(__DIR__ . '/Fixtures/mangos_auth_sqlite3.sql'));
 
-    public function createMangosAuthDatabase(string $expansion = null)
-    {
-        $this->mangosConnection = (new Mangos($expansion))->config('db_auth', 'mangos');
-
-        config(["database.connections.{$this->mangosConnection}" => [
+        config(["database.connections.cata_realm" => [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', false),
         ]]);
 
-        DB::connection($this->mangosConnection)->unprepared(file_get_contents(__DIR__ . '/Fixtures/mangos_auth_sqlite3.sql'));
+        DB::connection('cata_realm')->unprepared(file_get_contents(__DIR__ . '/Fixtures/mangos_auth_sqlite3.sql'));
     }
 }

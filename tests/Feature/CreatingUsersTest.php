@@ -3,8 +3,8 @@
 namespace Tests\Feature\User;
 
 use App\Account;
-use App\Contracts\Emulator;
-use App\Emulators\EmulatorManager;
+use App\Contracts\Emulator as EmulatorContract;
+use App\Emulator;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -21,12 +21,10 @@ class CreatingUsersTest extends TestCase
         parent::setUp();
 
         config([
-            'services.skyfire.supported' => true,
             'services.mangos.supported' => true
         ]);
 
-        $this->createSkyFireAuthDatabase();
-        $this->createMangosAuthDatabase();
+        $this->createMangosAuthDatabases();
     }
 
     /**
@@ -51,12 +49,12 @@ class CreatingUsersTest extends TestCase
             'email' => 'john@example.com'
         ]);
 
-        $manager = $this->app->make(EmulatorManager::class);
-        $this->assertAccountCreated('john@example.com', $manager->driver('skyfire'));
-        $this->assertAccountCreated('john@example.com', $manager->driver('mangos'));
+        foreach (Emulator::collect()->mapToInstances() as $emulator) {
+            $this->assertAccountCreated('john@example.com', $emulator);
+        }
     }
 
-    private function assertAccountCreated(string $email, Emulator $emulator)
+    private function assertAccountCreated(string $email, EmulatorContract $emulator)
     {
         $userId = User::query()->where('email', $email)->value('id');
 

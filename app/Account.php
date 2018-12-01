@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Concerns\connectsToEmulator;
-use App\Contracts\Emulator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +12,10 @@ use function blank;
  * Class Account
  * @package App
  *
- * @method static Builder online(?Emulator $emulator)
- * @method static Builder active(?Emulator $emulator)
- * @method static Builder inactive(?Emulator $emulator)
- * @method static Builder recentlyCreated(?Emulator $emulator)
+ * @method static Builder online()
+ * @method static Builder active()
+ * @method static Builder inactive()
+ * @method static Builder recentlyCreated()
  */
 class Account extends Model
 {
@@ -72,15 +71,10 @@ class Account extends Model
      * Query the online accounts
      *
      * @param Builder $query
-     * @param Emulator|null $emulator
      * @return Builder
      */
-    public function scopeOnline($query, ?Emulator $emulator)
+    public function scopeOnline($query)
     {
-        if ($emulator) {
-            $emulator->connectModel($this);
-        }
-
         return $query->where('online', '>', 0);
     }
 
@@ -88,15 +82,10 @@ class Account extends Model
      * Query the active accounts
      *
      * @param Builder $query
-     * @param Emulator $emulator
      * @return Builder
      */
-    public function scopeActive($query, ?Emulator $emulator)
+    public function scopeActive($query)
     {
-        if ($emulator) {
-            $emulator->connectModel($this);
-        }
-
         return $query->where('last_login', '>', $this->freshTimestamp()->subMonths(6)->format('Y-m-d'));
     }
 
@@ -104,15 +93,10 @@ class Account extends Model
      * Query the inactive accounts
      *
      * @param Builder $query
-     * @param Emulator $emulator
      * @return Builder
      */
-    public function scopeInactive($query, ?Emulator $emulator)
+    public function scopeInactive($query)
     {
-        if ($emulator) {
-            $emulator->connectModel($this);
-        }
-
         return $query->where('last_login', '<=', $this->freshTimestamp()->subMonths(6)->format('Y-m-d'));
     }
 
@@ -120,25 +104,10 @@ class Account extends Model
      * Query the most recent accounts
      *
      * @param Builder $query
-     * @param Emulator $emulator
      * @return Builder
      */
-    public function scopeRecentlyCreated($query, ?Emulator $emulator)
+    public function scopeRecentlyCreated($query)
     {
-        if ($emulator) {
-            $emulator->connectModel($this);
-        }
-
         return $query->where('joindate', '>=', $this->freshTimestamp()->subMonth()->format('Y-m-d'));
-    }
-
-    /**
-     * All the characters made with the current account
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function characters()
-    {
-        return $this->hasMany(Character::class, 'account');
     }
 }

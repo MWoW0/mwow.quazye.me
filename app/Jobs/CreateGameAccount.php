@@ -3,8 +3,7 @@
 namespace App\Jobs;
 
 use App\Contracts\Emulator as EmulatorContract;
-use App\Emulators\EmulatorManager;
-use App\Facades\Emulator;
+use App\Emulator;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use function decrypt;
 use function encrypt;
 
-class CreateGameAccountJob implements ShouldQueue
+class CreateGameAccount implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -56,25 +55,18 @@ class CreateGameAccountJob implements ShouldQueue
     {
         $this->id = $user->id;
         $this->password = encrypt($password);
-        $this->emulators = Emulator::supported();
+        $this->emulators = Emulator::collect()->mapToInstances();
     }
 
     /**
      * Execute the job.
-     *
-     * @param EmulatorManager|null $manager
      */
-    public function handle(EmulatorManager $manager = null)
+    public function handle()
     {
-        $manager = $manager ?? resolve(EmulatorManager::class);
-        /** @var User $user */
         $user = User::query()->findOrFail($this->id);
 
-        foreach ($this->emulators as $emulator) {
-            /** @var EmulatorContract $driver */
-            $driver = $manager->driver($emulator);
-
-            $driver->createAccount($user, decrypt($this->password));
-        }
+        $this->emulators->each(function (EmulatorContract $emulator) use ($user) {
+            $emulator->createAccount($user, decrypt($this->password));
+        });
     }
 }

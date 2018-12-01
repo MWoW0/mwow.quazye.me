@@ -8,11 +8,38 @@ use App\GameAccount;
 use App\Hashing\Sha1Hasher;
 use App\Realm;
 use App\User;
+use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Database\Eloquent\Model;
 use function config;
 
-class SkyFire implements Emulator
+class MangosCataclysm implements Emulator
 {
+    /**
+     * The WoW expansion name
+     *
+     * @return string|null
+     */
+    public function expansion(): ?string
+    {
+        return 'cataclysm';
+    }
+
+    /**
+     * Get a value from the emulators configurations
+     *
+     * @param  string|null $key
+     * @param  mixed $default
+     * @return mixed
+     */
+    public function config(string $key = null, $default = null)
+    {
+        if ($key) {
+            return config("services.mangos.{$this->expansion()}.{$key}", $default);
+        }
+
+        return config("services.mangos.{$this->expansion()}", $default);
+    }
+
     /**
      * Name of the database connection
      *
@@ -20,20 +47,25 @@ class SkyFire implements Emulator
      */
     public function connectionName(): string
     {
-        return 'skyfire';
+        return $this->config('db_auth', "{$this->expansion()}_realm");
     }
 
     /**
-     * @param string|null $key
-     * @param mixed|null $default
-     * @return mixed
+     * Connect the model to the emulators database
+     *
+     * @param Model $model
+     * @return Model
      */
-    public function config(string $key = null, $default = null)
+    public function connectModel(Model $model): Model
     {
-        return config("services.skyfire.{$key}", $default);
+        $model->setConnection($this->connectionName());
+
+        return $model;
     }
 
     /**
+     * Create a new game account for the emulator
+     *
      * @param User $user
      * @param string $password
      * @throws \Throwable
@@ -55,7 +87,8 @@ class SkyFire implements Emulator
                     'user_id' => $user->getKey(),
                     'account_id' => $account->getKey(),
                     'realm_id' => $realm->getKey(),
-                    'emulator' => static::class
+                    'emulator' => static::class,
+                    'expansion' => $this->expansion()
                 ]);
             });
 
@@ -63,21 +96,16 @@ class SkyFire implements Emulator
     }
 
     /**
-     * Connect the model to the emulators database
+     * List the realms this emulator has
      *
-     * @param Model $model
-     * @return Model
+     * @return DatabaseCollection
      */
-    public function connectModel(Model $model): Model
+    public function realms(): DatabaseCollection
     {
-        $model->setConnection($this->connectionName());
-
-        return $model;
+        return Realm::connectedTo($this)->get();
     }
 
     /**
-     * Get the emulator statistics
-     *
      * @return EmulatorStatistics
      */
     public function statistics(): EmulatorStatistics

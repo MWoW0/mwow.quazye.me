@@ -32,14 +32,14 @@ return [
     */
 
     'connections' => [
-        'mangos' => [
+        'cata_realm' => [
             'driver' => 'mysql',
-            'host' => env('MANGOS_DB_HOST', '127.0.0.1'),
-            'port' => env('MANGOS_DB_PORT', '3306'),
-            'database' => env('MANGOS_DB_DATABASE', 'forge'),
-            'username' => env('MANGOS_DB_USERNAME', 'forge'),
-            'password' => env('MANGOS_DB_PASSWORD', ''),
-            'unix_socket' => env('MANGOS_DB_SOCKET', ''),
+            'host' => env('MANGOS_CATACLYSM_REALM_DB_HOST', '127.0.0.1'),
+            'port' => env('MANGOS_CATACLYSM_REALM_DB_PORT', '3306'),
+            'database' => env('MANGOS_CATACLYSM_REALM_DB_DATABASE', 'cata_realm'),
+            'username' => env('MANGOS_CATACLYSM_REALM_DB_USERNAME', env('DB_USERNAME')),
+            'password' => env('MANGOS_CATACLYSM_REALM_DB_PASSWORD', env('DB_PASSWORD')),
+            'unix_socket' => env('MANGOS_CATACLYSM_REALM_DB_SOCKET', env('DB_SOCKET')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',
@@ -48,14 +48,14 @@ return [
             'engine' => null,
         ],
 
-        'skyfire' => [
+        'wotlk_realm' => [
             'driver' => 'mysql',
-            'host' => env('SKYFIRE_DB_HOST', '127.0.0.1'),
-            'port' => env('SKYFIRE_DB_PORT', '3306'),
-            'database' => env('SKYFIRE_DB_DATABASE', 'forge'),
-            'username' => env('SKYFIRE_DB_USERNAME', 'forge'),
-            'password' => env('SKYFIRE_DB_PASSWORD', ''),
-            'unix_socket' => env('SKYFIRE_DB_SOCKET', ''),
+            'host' => env('MANGOS_WOTLK_REALM_DB_HOST', '127.0.0.1'),
+            'port' => env('MANGOS_WOTLK_REALM_DB_PORT', '3306'),
+            'database' => env('MANGOS_WOTLK_REALM_DB_DATABASE', 'wotlk_realm'),
+            'username' => env('MANGOS_WOTLK_REALM_DB_USERNAME', env('DB_USERNAME')),
+            'password' => env('MANGOS_WOTLK_REALM_DB_PASSWORD', env('DB_PASSWORD')),
+            'unix_socket' => env('MANGOS_WOTLK_REALM_DB_SOCKET', env('DB_SOCKET')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',

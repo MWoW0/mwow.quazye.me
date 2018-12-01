@@ -5,10 +5,18 @@ namespace App\Contracts;
 use App\Account;
 use App\Emulators\EmulatorStatistics;
 use App\User;
+use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Database\Eloquent\Model;
 
 interface Emulator
 {
+    /**
+     * The WoW expansion name
+     *
+     * @return string|null
+     */
+    public function expansion(): ?string;
+
     /**
      * Get a value from the emulators configurations
      *
@@ -41,6 +49,13 @@ interface Emulator
      * @return Account
      */
     public function createAccount(User $user, string $password): Account;
+
+    /**
+     * List the realms this emulator has
+     *
+     * @return DatabaseCollection
+     */
+    public function realms(): DatabaseCollection;
 
     /**
      * Get the emulator statistics

@@ -16,13 +16,7 @@ class ListingGameAccountsTest extends TestCase
     {
         parent::setUp();
 
-        config([
-            'services.skyfire.supported' => true,
-            'services.mangos.supported' => true
-        ]);
-
-        $this->createSkyFireAuthDatabase();
-        $this->createMangosAuthDatabase();
+        $this->createMangosAuthDatabases();
     }
 
     /**

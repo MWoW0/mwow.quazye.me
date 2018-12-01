@@ -6,6 +6,7 @@ namespace App\Emulators;
 use App\Account;
 use App\Contracts\Emulator;
 use App\Contracts\Emulators\GathersGameStatistics;
+use Illuminate\Database\Eloquent\Model;
 
 class EmulatorStatistics implements GathersGameStatistics
 {
@@ -60,7 +61,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersOnline()
     {
-        return Account::online($this->emulator)->count('id');
+        return $this->account()->online()->count('id');
     }
 
     /**
@@ -70,7 +71,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersActive()
     {
-        return Account::active($this->emulator)->count('id');
+        return $this->account()->active()->count('id');
     }
 
     /**
@@ -80,7 +81,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersInactive()
     {
-        return Account::inactive($this->emulator)->count('id');
+        return $this->account()->inactive()->count('id');
     }
 
     /**
@@ -90,7 +91,7 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersRecentlyCreated()
     {
-        return Account::recentlyCreated($this->emulator)->count('id');
+        return $this->account()->recentlyCreated()->count('id');
     }
 
     /**
@@ -100,6 +101,14 @@ class EmulatorStatistics implements GathersGameStatistics
      */
     public function playersTotal()
     {
-        return Account::connectedTo($this->emulator)->count();
+        return $this->account()->newQuery()->count('id');
+    }
+
+    /**
+     * @return Account|Model
+     */
+    private function account()
+    {
+        return Account::connectedTo($this->emulator);
     }
 }
