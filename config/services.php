@@ -46,19 +46,13 @@ return [
         'secret' => env('ALGOLIA_SECRET', ''),
     ],
 
-    'skyfire' => [
-        // @deprecated Soap
-        // 'location' => env('SF_SOAP_LOCATION', 'http://127.0.0.1:7878'),
-        // 'uri' => env('SF_SOAP_URI', 'urn:TC'),
-        // 'style' => env('SF_SOAP_STYLE', SOAP_RPC),
+    'mangos' => [
+        'cataclysm' => [
+            'db_auth' => env('MANGOS_CATACLYSM_DB_DATABASE', 'cata_realm')
+        ],
 
-        // 'login' => env('SF_USER', 'admin'),
-        // 'password' => env('SF_PASS', 'admin')
-        'host' => 'game.quazye.me',
-        'port' => 8085,
-
-        'db_auth' => env('SF_DB_AUTH', 'skyfire_auth'),
-        'db_characters' => env('SF_DB_CHARACTERS', 'skyfire_characters'),
-        'db_world' => env('SF_DB_WORLD', 'skyfire_world')
-    ],
+        'wotlk' => [
+            'db_auth' => env('MANGOS_WOTLK_DB_DATABASE', 'wotlk_realm')
+        ]
+    ]
 ];

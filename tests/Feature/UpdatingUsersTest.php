@@ -2,22 +2,23 @@
 
 namespace Tests\Feature;
 
-use App\Hashing\SillySha1;
+use App\Emulator;
+use App\Hashing\Sha1Hasher;
 use App\User;
 use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
+use Tests\TestsEmulatorDatabases;
 
 class UpdatingUsersTest extends TestCase
 {
-	use RefreshDatabase, HasSkyFireDatabases;
+    use RefreshDatabase, TestsEmulatorDatabases;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->createSkyFireAuthDatabase();
+        $this->createMangosAuthDatabases();
     }
 
     /** @test */
@@ -40,8 +41,11 @@ class UpdatingUsersTest extends TestCase
     		])
     		->assertRedirect('/home');
 
-    	$this->assertDatabaseHas('account', [
-        	'sha_pass_hash' => (new SillySha1)->make('superSecretPassword', ['user' => 'john']),
-    	], 'skyfire_auth');
+        $password = (new Sha1Hasher)->make('superSecretPassword', ['user' => 'john']);
+        foreach (Emulator::collect()->mapToInstances() as $emulator) {
+            $this->assertDatabaseHas('account', [
+                'sha_pass_hash' => $password
+            ], $emulator->connectionName());
+        }
     } 
 }

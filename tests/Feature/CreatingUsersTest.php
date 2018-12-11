@@ -3,26 +3,28 @@
 namespace Tests\Feature\User;
 
 use App\Account;
-use App\Emulators\SkyFire;
-use App\Realm;
+use App\Contracts\Emulator as EmulatorContract;
+use App\Emulator;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\DB;
-use Tests\HasSkyFireDatabases;
 use Tests\TestCase;
-use function config;
-use function file_get_contents;
+use Tests\TestsEmulatorDatabases;
+use function get_class;
 
 class CreatingUsersTest extends TestCase
 {
-    use RefreshDatabase, HasSkyFireDatabases, WithFaker;
+    use RefreshDatabase, TestsEmulatorDatabases, WithFaker;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->createSkyFireAuthDatabase();
+        config([
+            'services.mangos.supported' => true
+        ]);
+
+        $this->createMangosAuthDatabases();
     }
 
     /**
@@ -30,8 +32,6 @@ class CreatingUsersTest extends TestCase
      */
     public function itCreatesAUserAndAGameAccountUponRegistration()
     {
-        $realm = factory(Realm::class)->create();
-
         $this->postJson(
             '/register',
             [
@@ -49,17 +49,29 @@ class CreatingUsersTest extends TestCase
             'email' => 'john@example.com'
         ]);
 
+        foreach (Emulator::collect()->mapToInstances() as $emulator) {
+            $this->assertAccountCreated('john@example.com', $emulator);
+        }
+    }
+
+    private function assertAccountCreated(string $email, EmulatorContract $emulator)
+    {
+        $userId = User::query()->where('email', $email)->value('id');
+
         $this->assertDatabaseHas('account', [
             'username' => 'john',
             'sha_pass_hash' => '0639C9915279A92A5AAF84FF50FBA680B06152CF',
             'email' => 'john@example.com'
-        ], 'skyfire_auth');
+        ], $emulator->connectionName());
+
+
+        $accountId = Account::connectedTo($emulator)->where('email', $email)->value('id');
 
         $this->assertDatabaseHas('game_accounts', [
-            'user_id' => User::query()->where('email', 'john@example.com')->value('id'),
-            'account_id' => Account::query()->where('email', 'john@example.com')->value('id'),
-            'realm_id' => $realm->id,
-            'emulator' => SkyFire::class
+            'user_id' => $userId,
+            'account_id' => $accountId,
+            //'realm_id' => $realm->id,
+            'emulator' => get_class($emulator)
         ]);
     }
 

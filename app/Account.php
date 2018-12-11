@@ -2,21 +2,24 @@
 
 namespace App;
 
-use App\Concerns\EmulatorDatabases;
+use App\Concerns\connectsToEmulator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use function blank;
 
+/**
+ * Class Account
+ * @package App
+ *
+ * @method static Builder online()
+ * @method static Builder active()
+ * @method static Builder inactive()
+ * @method static Builder recentlyCreated()
+ */
 class Account extends Model
 {
-    use EmulatorDatabases;
-
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
-    protected $connection = 'auth';
+    use connectsToEmulator;
 
     /**
      * The table associated with the model.
@@ -24,6 +27,7 @@ class Account extends Model
      * @var string
      */
     protected $table = 'account';
+
     /**
      * Indicates if the model should be timestamped.
      *
@@ -36,6 +40,18 @@ class Account extends Model
      * @var array
      */
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (Account $account) {
+            // Some databases force fills an invalid default date, this avoids query exceptions on that regard.
+            if (blank($account->last_login)) {
+                $account->last_login = $account->freshTimestampString();
+            }
+        });
+    }
 
     /**
      * Find the account(s) for given User
@@ -93,15 +109,5 @@ class Account extends Model
     public function scopeRecentlyCreated($query)
     {
         return $query->where('joindate', '>=', $this->freshTimestamp()->subMonth()->format('Y-m-d'));
-    }
-
-    /**
-     * All the characters made with the current account
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function characters()
-    {
-        return $this->hasMany(Character::class, 'account');
     }
 }

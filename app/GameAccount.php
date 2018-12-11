@@ -2,51 +2,71 @@
 
 namespace App;
 
-use App\Contracts\Emulator;
+use App\Events\GameAccountCreated;
+use App\Events\GameAccountDeleted;
+use App\Events\GameAccountUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use function is_object;
+use function tap;
 
 class GameAccount extends Model
 {
     protected $fillable = [
-        'user_id', 'account_id', 'realm_id', 'emulator'
+        'user_id', 'account_id', 'realm_id', 'emulator', 'expansion'
     ];
 
-    public static function link(Account $account, User $toUser)
-    {
-        return new static([
-            'account_id' => $account->id,
-            'user_id' => $toUser->id
-        ]);
-    }
-
-    public function through(Emulator $emulator)
-    {
-        return $this->fill([
-            'emulator' => get_class($emulator)
-        ]);
-    }
-
-    public function onRealm($realm)
-    {
-        return $this->fill([
-            'realm_id' => is_object($realm) ? $realm->id : $realm
-        ]);
-    }
+    protected $dispatchesEvents = [
+        'created' => GameAccountCreated::class,
+        'updated' => GameAccountUpdated::class,
+        'deleted' => GameAccountDeleted::class
+    ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function account(): BelongsTo
+    /**
+     * @return Model|Account|null
+     */
+    public function resolveAccount()
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        if ($this->relationLoaded('account')) {
+            return $this->getRelation('account');
+        }
+
+        $emulator = Emulator::make($this->emulator);
+        $emulator->expansion = $this->expansion;
+
+        return tap(Account::connectedTo($emulator)->findOrFail($this->account_id), function ($account) {
+            $this->setRelation('account', $account);
+        });
     }
 
-    public function realm(): BelongsTo
+    public function getAccountAttribute()
     {
-        return $this->belongsTo(Realm::class, 'realm_id');
+        return $this->resolveAccount();
+    }
+
+    /**
+     * @return Model|Realm|null
+     */
+    public function resolveRealm()
+    {
+        if ($this->relationLoaded('realm')) {
+            return $this->getRelation('realm');
+        }
+
+        $emulator = Emulator::make($this->emulator);
+        $emulator->expansion = $this->expansion;
+
+        return tap(Realm::connectedTo($emulator)->findOrFail($this->realm_id), function ($realm) {
+            $this->setRelation('realm', $realm);
+        });
+    }
+
+    public function getRealmAttribute()
+    {
+        return $this->resolveRealm();
     }
 }

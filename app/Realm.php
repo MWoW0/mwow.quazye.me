@@ -2,12 +2,12 @@
 
 namespace App;
 
-use App\Concerns\EmulatorDatabases;
+use App\Concerns\connectsToEmulator;
 use Illuminate\Database\Eloquent\Model;
 
 class Realm extends Model
 {
-    use EmulatorDatabases;
+    use connectsToEmulator;
 
     /**
      * The attributes that aren't mass assignable.

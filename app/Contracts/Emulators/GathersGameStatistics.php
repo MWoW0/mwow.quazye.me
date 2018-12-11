@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Emulators;
 
-use App\Contracts\EmulatorContract;
+use App\Contracts\Emulator as EmulatorContract;
 
 interface GathersGameStatistics
 {

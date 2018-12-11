@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateGameAccounts extends Migration
 {
@@ -15,6 +15,7 @@ class CreateGameAccounts extends Migration
         Schema::create('game_accounts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('emulator')->index();
+            $table->string('expansion')->index()->nullable();
             $table->unsignedInteger('account_id');
             $table->unsignedInteger('realm_id');
             $table->unsignedInteger('user_id');
