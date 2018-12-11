@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserType;
+use App\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
@@ -43,16 +44,12 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     protected function gate()
     {
-        Gate::define('viewHorizon', function ($user) {
-            return $user->type === UserType::Admin;
+        Gate::define('viewHorizon', function (?User $user) {
+            return $user && $user->type === UserType::Admin;
         });
 
-        Horizon::auth(function ($request) {
-            if (is_null($request->user())) {
-                return false;
-            }
-
-            return $request->user()->type === UserType::Admin;
+        Horizon::auth(function () {
+            return Gate::allows('viewHorizon');
         });
     }
 }
