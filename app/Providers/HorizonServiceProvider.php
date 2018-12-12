@@ -47,9 +47,5 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
         Gate::define('viewHorizon', function (?User $user) {
             return $user && $user->type === UserType::Admin;
         });
-
-        Horizon::auth(function () {
-            return Gate::allows('viewHorizon');
-        });
     }
 }

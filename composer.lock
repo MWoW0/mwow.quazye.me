@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48f2662a3354114adb722100358d0796",
+    "content-hash": "df4abc4e93a9fe4526e1e596c9f3bab8",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -2598,6 +2598,46 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
+        },
+        {
+            "name": "shipping-docker/vessel",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shipping-docker/vessel.git",
+                "reference": "04b93f89d2351bfa7201cd2c822c25515dccbe46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shipping-docker/vessel/zipball/04b93f89d2351bfa7201cd2c822c25515dccbe46",
+                "reference": "04b93f89d2351bfa7201cd2c822c25515dccbe46",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vessel\\VesselServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vessel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Fidao",
+                    "email": "fideloper@gmail.com"
+                }
+            ],
+            "description": "Simple Docker dev environments",
+            "time": "2018-10-16T16:39:15+00:00"
         },
         {
             "name": "spatie/laravel-query-builder",
