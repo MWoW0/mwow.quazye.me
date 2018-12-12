@@ -32,30 +32,14 @@ return [
     */
 
     'connections' => [
-        'cata_realm' => [
+        'realmd' => [
             'driver' => 'mysql',
-            'host' => env('MANGOS_CATACLYSM_REALM_DB_HOST', '127.0.0.1'),
-            'port' => env('MANGOS_CATACLYSM_REALM_DB_PORT', '3306'),
-            'database' => env('MANGOS_CATACLYSM_REALM_DB_DATABASE', 'cata_realm'),
-            'username' => env('MANGOS_CATACLYSM_REALM_DB_USERNAME', env('DB_USERNAME')),
-            'password' => env('MANGOS_CATACLYSM_REALM_DB_PASSWORD', env('DB_PASSWORD')),
-            'unix_socket' => env('MANGOS_CATACLYSM_REALM_DB_SOCKET', env('DB_SOCKET')),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_general_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-        ],
-
-        'wotlk_realm' => [
-            'driver' => 'mysql',
-            'host' => env('MANGOS_WOTLK_REALM_DB_HOST', '127.0.0.1'),
-            'port' => env('MANGOS_WOTLK_REALM_DB_PORT', '3306'),
-            'database' => env('MANGOS_WOTLK_REALM_DB_DATABASE', 'wotlk_realm'),
-            'username' => env('MANGOS_WOTLK_REALM_DB_USERNAME', env('DB_USERNAME')),
-            'password' => env('MANGOS_WOTLK_REALM_DB_PASSWORD', env('DB_PASSWORD')),
-            'unix_socket' => env('MANGOS_WOTLK_REALM_DB_SOCKET', env('DB_SOCKET')),
+            'host' => env('MANGOS_REALM_DB_HOST', env('DB_HOST')),
+            'port' => env('MANGOS_REALM_DB_PORT', env('DB_PORT')),
+            'database' => env('MANGOS_REALM_DB_DATABASE', 'realmd'),
+            'username' => env('MANGOS_REALM_DB_USERNAME', env('DB_USERNAME')),
+            'password' => env('MANGOS_REALM_DB_PASSWORD', env('DB_PASSWORD')),
+            'unix_socket' => env('MANGOS_REALM_DB_SOCKET', env('DB_SOCKET')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',

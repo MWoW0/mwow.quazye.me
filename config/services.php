@@ -48,11 +48,11 @@ return [
 
     'mangos' => [
         'cataclysm' => [
-            'db_auth' => env('MANGOS_CATACLYSM_DB_DATABASE', 'cata_realm')
+            'db_auth' => env('MANGOS_CATACLYSM_DB_DATABASE', 'realmd')
         ],
 
         'wotlk' => [
-            'db_auth' => env('MANGOS_WOTLK_DB_DATABASE', 'wotlk_realm')
+            'db_auth' => env('MANGOS_WOTLK_DB_DATABASE', 'realmd')
         ]
     ]
 ];

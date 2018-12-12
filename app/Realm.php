@@ -20,7 +20,7 @@ class Realm extends Model
      *
      * @var string
      */
-    protected $connection = 'auth';
+    protected $connection = 'realmd';
 
     /**
      * The table associated with the model.
