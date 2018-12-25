@@ -41,14 +41,23 @@ Vue.use(Loading);
 // })
 
 /**
+ * Easy tooltips using Popper.js
+ *
+ * @source https://github.com/Akryum/v-tooltip
+ */
+import VTooltip from 'v-tooltip'
+ 
+Vue.use(VTooltip)
+
+/**
  * Configure the icons used through the app.
  */
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash } from '@fortawesome/pro-solid-svg-icons'
+import { faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash, faShieldCheck } from '@fortawesome/pro-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vue from "vue";
 
-library.add(faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash )
+library.add(faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash, faShieldCheck )
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
