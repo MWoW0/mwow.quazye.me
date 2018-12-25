@@ -22,6 +22,13 @@ class Account extends Model
     use connectsToEmulator;
 
     /**
+     * The connection name for the model.
+     *
+     * @var string
+     */
+    protected $connection = 'realmd';
+
+    /**
      * The table associated with the model.
      *
      * @var string

@@ -20,19 +20,14 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     {
         parent::boot();
 
+        // Override the default auth logic in Horizon.
+        Horizon::auth(function ($request) {
+            return $request->user() && $request->user()->type === UserType::Admin;
+        });
+
         // Horizon::routeSmsNotificationsTo('15556667777');
         // Horizon::routeMailNotificationsTo('example@example.com');
         // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 
     /**

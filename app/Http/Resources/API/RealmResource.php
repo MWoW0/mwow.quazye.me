@@ -16,7 +16,8 @@ class RealmResource extends JsonResource
     {
         return [
             'name' => $this->resource->name,
-            'address' => $this->resource->address
+            'address' => $this->resource->address,
+            'expansion' => $this->resource->expansion
         ];
     }
 }

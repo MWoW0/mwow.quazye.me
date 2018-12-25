@@ -10,23 +10,21 @@
                     </h1>
                 </div>
 
-                @foreach(Emulator::collect()->mapToInstances() as $emulator)
-                    <div class="font-sans text-center items-center justify-center rounded min-w-full w-full py-8">
-                        @foreach($emulator->realms() as $realm)
-                            <div class="overflow-hidden bg-white rounded min-w-full w-full shadow-lg  leading-normal">
-                                <div class="block group p-4 border-b">
-                                    <p class="font-bold text-lg mb-1 text-black">
-                                        <img src='{{ Storage::url("expansions/{$emulator->expansion()}.png") }}'
-                                             alt="{{ $emulator->expansion() }}"> {{ $realm->name }}
-                                    </p>
-                                    <p class="text-grey-darker mb-2 group-hover:text-white">
-                                        {{ __(':count Active players', ['count' => $emulator->statistics()->playersActive()]) }}
-                                    </p>
-                                </div>
+                <div class="font-sans text-center items-center justify-center rounded min-w-full w-full py-8">
+                    @foreach($realms as $realm)
+                        <div class="overflow-hidden bg-white rounded min-w-full w-full shadow-lg  leading-normal">
+                            <div class="block group p-4 border-b">
+                                <p class="font-bold text-lg mb-1 text-black">
+                                    <img src='{{ Storage::url("expansions/{$realm->expansion}.png") }}'
+                                         alt="{{ $realm->expansion }}"> {{ $realm->name }}
+                                </p>
+                                <p class="text-grey-darker mb-2 group-hover:text-white">
+                                    {{ __(':count Active players', ['count' => App\Account::active()->count()]) }}
+                                </p>
                             </div>
-                        @endforeach
-                    </div>
-                @endforeach
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
