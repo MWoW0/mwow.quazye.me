@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserType;
+use CollabCorp\LaravelFeatureToggle\Feature;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('admin', function () {
             return Auth::check()
                 && Auth::user()->type === UserType::Admin;
+        });
+
+        Feature::bind('env', function ($user, array $environments) {
+            return app()->environment($environments);
         });
     }
 

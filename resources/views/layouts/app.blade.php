@@ -11,6 +11,17 @@
 
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+
+    <!-- Laravel scripts -->
+    <script>
+        window.Laravel = <?php echo json_encode([
+            'translations' => json_decode(file_get_contents(resource_path('lang/'.app()->getLocale().'.json')), true),
+            'algolia' => [
+                'id' => config('services.algolia.id'),
+                'search_secret' => config('services.algolia.search_secret')
+            ],
+        ]); ?>
+    </script>
 </head>
 <body class="bg-grey-lightest h-screen antialiased">
     <div id="app">
@@ -24,7 +35,15 @@
                     </div>
                     <div class="flex-1">
                         @if(Auth::check())
-                            <a href="{{ url('/home') }}" class="no-underline hover:underline text-sm font-normal text-grey-darker">{{ __('Home') }}</a>
+                            @feature('community')
+                                <router-link :to="{ name: 'community' }" class="mx-2 no-underline border-b-2 hover:border-blue-dark text-sm font-normal text-grey-darker">
+                                    {{ __('Community') }}
+                                </router-link>
+                            @endfeature
+
+                            <router-link :to="{ name: 'home.dashboard' }" class="mx-2 no-underline border-b-2 hover:border-blue-dark text-sm font-normal text-grey-darker">
+                                {{ __('Home') }}
+                            </router-link>
                         @endif
                     </div>
 
@@ -58,6 +77,12 @@
         @endif
 
         @yield('content')
+
+        @if(Auth::check())
+            <transition name="fade">
+                <router-view></router-view>
+            </transition>
+        @endif
     </div>
 
     <!-- Scripts -->
