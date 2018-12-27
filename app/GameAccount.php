@@ -31,20 +31,17 @@ class GameAccount extends Model
      */
     public function resolveAccount()
     {
-        if ($this->relationLoaded('account')) {
-            return $this->getRelation('account');
-        }
-
-        $emulator = Emulator::make($this->emulator);
-        $emulator->expansion = $this->expansion;
-
-        return tap(Account::connectedTo($emulator)->findOrFail($this->account_id), function ($account) {
+        return tap(Account::query()->findOrFail($this->account_id), function ($account) {
             $this->setRelation('account', $account);
         });
     }
 
     public function getAccountAttribute()
     {
+        if ($this->relationLoaded('account')) {
+            return $this->getRelation('account');
+        }
+
         return $this->resolveAccount();
     }
 
@@ -53,20 +50,17 @@ class GameAccount extends Model
      */
     public function resolveRealm()
     {
-        if ($this->relationLoaded('realm')) {
-            return $this->getRelation('realm');
-        }
-
-        $emulator = Emulator::make($this->emulator);
-        $emulator->expansion = $this->expansion;
-
-        return tap(Realm::connectedTo($emulator)->findOrFail($this->realm_id), function ($realm) {
+        return tap(Realm::query()->findOrFail($this->realm_id), function ($realm) {
             $this->setRelation('realm', $realm);
         });
     }
 
     public function getRealmAttribute()
     {
+        if ($this->relationLoaded('realm')) {
+            return $this->getRelation('realm');
+        }
+
         return $this->resolveRealm();
     }
 }
