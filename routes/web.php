@@ -1,6 +1,7 @@
 <?php
-use Illuminate\Support\Facades\Route;
+
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,4 +18,4 @@ Route::get('/', 'ShowWelcome');
 
 Auth::routes(['verify' => false]);
 
-Route::middleware(['auth'])->get('home/{any?}', 'ServeVueApp')->name('home')->where('any', '.*');
+Route::middleware(['auth'])->get('/{any?}', 'ServeVueApp')->where('any', '.*');

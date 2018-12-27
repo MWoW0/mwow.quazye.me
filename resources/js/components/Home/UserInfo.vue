@@ -32,9 +32,8 @@
 </template>
 
 <script>
-    import Tooltip from 'Tooltip.js';
     import Form from 'form-backend-validation';
-    import { mapGetters } from 'vuex'
+    import {mapGetters} from 'vuex'
     import ResourceForm from "@/components/ResourceForm";
     import TextField from "@/components/Forms/TextField";
     import EmailField from "@/components/Forms/EmailField";
