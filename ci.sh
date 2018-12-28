@@ -22,11 +22,6 @@ if [ $# -gt 0 ]; then
 	# COMMAND="run --rm -T"
 	COMMAND="exec"
 
-	if [[ $COMMAND == "exec" ]]; then
-		# Boot a container we can use across the commands
-		$COMPOSE up -d
-	fi
-
     # If "php" is used, pass-thru to "php"
     # inside a new container
     if [ "$1" == "php" ]; then
