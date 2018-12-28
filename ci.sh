@@ -3,7 +3,6 @@
 # We need the full path here because /sbin is not in user Jenkin's $PATH
 #export XDEBUG_HOST=$(/sbin/ifconfig docker0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1)
 export CONTAINER_ENV=${CONTAINER_ENV:-local}
-export DOCKER_HOST=127.0.0.1:2375
 
 export WWWUSER=${WWWUSER:-$UID}
 # Set environment variables for dev
