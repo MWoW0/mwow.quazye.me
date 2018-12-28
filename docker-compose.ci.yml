@@ -4,14 +4,6 @@ services:
     extends:
       file: docker-compose.base.yml
       service: app
-  node:
-    extends:
-      file: docker-compose.base.yml
-      service: node
-  redis:
-    extends:
-      file: docker-compose.base.yml
-      service: redis
   mysql:
     extends:
       file: docker-compose.base.yml
