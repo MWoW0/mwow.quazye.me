@@ -5,11 +5,16 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.2.0",
         "ext-bcmath": "*",
+        "ext-curl": "*",
         "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-xml": "*",
+        "ext-zip": "*",
         "algolia/algoliasearch-client-php": "^1.27",
         "bensampo/laravel-enum": "^1.16",
+        "collab-corp/laravel-feature-toggle": "dev-master",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "5.7.*",
@@ -56,7 +61,7 @@
     "scripts": {
         "project-install": [
             "@composer install",
-            "@php artisan app:install"
+            "@php artisan passport:install"
         ],
 
         "post-root-package-install": [

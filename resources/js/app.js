@@ -14,18 +14,53 @@ window.Vue = require('vue');
  * @source https://router.vuejs.org
  */
 import router from './router'
-
-/**
- * Enable translations for all Vue components
- */
-Vue.mixin(require('./mixins/translatable'));
-
 /**
  * Vue-loading makes it a breeze to add a loading animation for anything, including full screen.
  * @source https://github.com/ankurk91/vue-loading-overlay
  */
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+/**
+ * Easy tooltips using Popper.js
+ *
+ * @source https://github.com/Akryum/v-tooltip
+ */
+import VTooltip from 'v-tooltip'
+/**
+ * Configure the icons used through the app.
+ */
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {
+    faArrowDown,
+    faArrowUp,
+    faCaretDown,
+    faCheck,
+    faClock,
+    faCog,
+    faComments,
+    faExclamation,
+    faNewspaper,
+    faPencil,
+    faPlus,
+    faShieldCheck,
+    faSpinner,
+    faTachometer,
+    faTrash,
+    faUser
+} from '@fortawesome/pro-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import Vue from "vue";
+/**
+ * VueX provides a convenient global $store for all components.
+ * @source https://vuex.vuejs.org
+ */
+import store from './store.js';
+
+/**
+ * Enable translations for all Vue components
+ */
+Vue.mixin(require('./mixins/translatable'));
+
 Vue.use(Loading);
 
 /**
@@ -40,26 +75,28 @@ Vue.use(Loading);
 //     duration: 6000,
 // })
 
-/**
- * Easy tooltips using Popper.js
- *
- * @source https://github.com/Akryum/v-tooltip
- */
-import VTooltip from 'v-tooltip'
- 
-Vue.use(VTooltip)
+Vue.use(VTooltip);
 
-/**
- * Configure the icons used through the app.
- */
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash, faShieldCheck } from '@fortawesome/pro-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import Vue from "vue";
+library.add(
+    faSpinner,
+    faCheck,
+    faTachometer,
+    faUser,
+    faPlus,
+    faComments,
+    faClock,
+    faArrowUp,
+    faArrowDown,
+    faCog,
+    faExclamation,
+    faCaretDown,
+    faPencil,
+    faTrash,
+    faShieldCheck,
+    faNewspaper
+);
 
-library.add(faSpinner, faCheck, faTachometer, faUser, faPlus, faComments, faClock, faArrowUp, faArrowDown, faCog, faExclamation, faCaretDown, faPencil, faTrash, faShieldCheck )
-
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 /**
  * Bind $log in Vue components to window.console.log
@@ -74,15 +111,9 @@ Vue.prototype.$log = window.console.log;
 Vue.prototype.$swal = window.swal;
 
 /**
- * VueX provides a convenient global $store for all components.
- * @source https://vuex.vuejs.org
- */
-import store from './store.js';
-
-/**
  * Instruct Vue to skip looking up a component named "trix-editor"
  */
-Vue.config.ignoredElements = ['trix-editor']
+Vue.config.ignoredElements = ['trix-editor'];
 
 /**
  * The following block of code may be used to automatically register your
@@ -92,11 +123,11 @@ Vue.config.ignoredElements = ['trix-editor']
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-const files = require.context('./', true, /\.vue$/i)
+const files = require.context('./', true, /\.vue$/i);
 
 files.keys().map(key => {
     return Vue.component(_.last(key.split('/')).split('.')[0], files(key))
-})
+});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
