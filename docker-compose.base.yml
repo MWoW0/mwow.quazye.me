@@ -1,0 +1,41 @@
+version: '2'
+services:
+  app:
+    build:
+      context: ./docker/app
+      dockerfile: Dockerfile
+    image: vessel/app
+    volumes:
+    - .:/var/www/html
+    networks:
+    - vessel
+    environment:
+      CONTAINER_ENV: "${APP_ENV}"
+      XDEBUG_HOST: "${XDEBUG_HOST}"
+      WWWUSER: "${WWWUSER}"
+  node:
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+      args:
+        uid: "${WWWUSER}"
+    image: vessel/node
+    user: node
+    volumes:
+    - .:/var/www/html
+    networks:
+    - vessel
+  mysql:
+    image: mysql:8
+    volumes:
+    - vesselmysql:/var/lib/mysql
+    # - ./docker/mysql/conf.d:/etc/mysql/conf.d
+    # - ./docker/mysql/logs:/var/log/mysql
+    networks:
+    - vessel
+  redis:
+    image: redis:alpine
+    volumes:
+    - vesselredis:/data
+    networks:
+    - vessel
