@@ -20,7 +20,7 @@ COMPOSE="docker-compose -f docker-compose.ci.yml"
 # If we pass any arguments...
 if [ $# -gt 0 ]; then
 	# COMMAND="run --rm -T"
-	COMMAND="exec"
+	COMMAND="exec -T"
 
     # If "php" is used, pass-thru to "php"
     # inside a new container
